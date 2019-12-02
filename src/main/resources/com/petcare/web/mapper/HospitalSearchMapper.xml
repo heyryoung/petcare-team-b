@@ -5,124 +5,191 @@
 <mapper namespace="com.petcare.web.mapper.HospitalSearchMapper">
 
 
-<!-- 검색 조건  -->
-<select id="selectCityCode" resultType="JusoVo">
-select distinct(gb) , gb_nm from juso
-</select>
+	<!-- 검색 조건  -->
+	<select id="selectCityCode" resultType="JusoVo">
+		SELECT 
+				DISTINCT(gb) 
+			,	gb_nm 
+		FROM JUSO
+	</select>
+		
+	<select id="selectGuCode" resultType="JusoVo">
+		SELECT 
+					cd 
+			,		gb
+			,		cd_nm 
+		FROM 		JUSO
+		WHERE 		gb LIKE #{gb}
+	</select>
 
-<select id="selectGuCode" resultType="JusoVo">
-select cd , gb, cd_nm from juso 
-	where gb like #{gb}
-</select>
 
-
-<select id="selectHosInfoCode" resultType="HosInfoCodeVo">
-select hos_info_code, code_name from hos_info_code
-</select>
+	<select id="selectHosInfoCode" resultType="HosInfoCodeVo">
+		SELECT	
+					hos_info_code
+			,		code_name 
+		FROM 		HOS_INFO_CODE
+	</select>
 
 <!-- pagenation을 위한 total -->
 
-<select id="countAllHospital" resultType="int" parameterType="Proxy">
-select count(hos_no) from hospital
-<trim prefix="WHERE" prefixOverrides="AND">
+	<select id="countAllHospital" resultType="int" parameterType="Proxy">
+		SELECT 
+					COUNT(hos_no) 
+		FROM		HOSPITAL
+	<trim prefix="WHERE" prefixOverrides="AND">
     <if test="hosAddress != null and hosAddress != ''">
-         replace(hos_address,' ' ,'') like '${hosAddress}%' 
+   		      		REPLACE(hos_address,' ' ,'') LIKE	'${hosAddress}%' 
     </if>
     <if test="searchWrd != null and searchWrd != ''">
-        AND replace(hos_name,' ','') like replace('%${searchWrd}%',' ','')
+		AND 		REPLACE(hos_name,' ','') LIKE REPLACE('%${searchWrd}%',' ','')
     </if>    
- </trim>
-</select>
+	</trim>
+	</select>
 
-<select id="countHospitalByCondition" resultType="int" parameterType="Proxy">
-SELECT count(*) 
-FROM HOSPITAL as h 
-JOIN (SELECT a.hos_no 
-		FROM ( SELECT hos_no , COUNT(*) as cnt 
-				FROM hos_info 
-				WHERE hos_info_code IN 
-  	<foreach item="item" index="index" collection="checkBoxList" open="(" separator="," close=")">
-        #{item}
-  	</foreach>				
-				GROUP BY hos_no
-				) a
-		WHERE cnt = (select count(*) from hos_info_code where hos_info_code in 
-  	<foreach item="item" index="index" collection="checkBoxList" open="(" separator="," close=")">
-        #{item}
-  	</foreach>	
-					)) as info
-ON h.hos_no = info.hos_no
-<trim prefix="WHERE" prefixOverrides="AND">
-    <if test="hosAddress != null and hosAddress != ''">
-         replace(hos_address,' ' ,'') like '${hosAddress}%' 
-    </if>
-    <if test="searchWrd != null and searchWrd != ''">
-        AND replace(hos_name,' ','') like replace('%${searchWrd}%',' ','')
-    </if>    
- </trim>
-</select>
-
-
-<!-- 검색 -->
-<select id="selectHospitalAllList" resultType="HospitalVo" parameterType="Proxy">
-select * from hospital
-<trim prefix="WHERE" prefixOverrides="AND">
-    <if test="hosAddress != null and hosAddress != ''">
-         replace(hos_address,' ' ,'') like '${hosAddress}%' 
-    </if>
-    <if test="searchWrd != null and searchWrd != ''">
-        AND replace(hos_name,' ','') like replace('%${searchWrd}%',' ','')
-    </if>    
- </trim>
-order by hos_no desc
-LIMIT ${startRow} ,${PAGE_SIZE}
-</select>
-
-<select id="selectHospitalList" resultType="HospitalVo" parameterType="Proxy">
-SELECT h.* 
-FROM HOSPITAL as h 
-JOIN (SELECT a.hos_no 
-		FROM ( SELECT hos_no , COUNT(*) as cnt 
-				FROM hos_info 
-				WHERE hos_info_code IN 
-  	<foreach item="item" index="index" collection="checkBoxList" open="(" separator="," close=")">
-        #{item}
-  	</foreach>				
-				GROUP BY hos_no
-				) a
-		WHERE cnt = (select count(*) from hos_info_code where hos_info_code in 
-  	<foreach item="item" index="index" collection="checkBoxList" open="(" separator="," close=")">
-        #{item}
-  	</foreach>	
-					)) as info
-ON h.hos_no = info.hos_no
-<trim prefix="WHERE" prefixOverrides="AND">
-    <if test="hosAddress != null and hosAddress != ''">
-         replace(hos_address,' ' ,'') like '${hosAddress}%' 
-    </if>
-    <if test="searchWrd != null and searchWrd != ''">
-        AND replace(hos_name,' ','') like replace('%${searchWrd}%',' ','')
-    </if>    
- </trim>
-LIMIT ${startRow} ,${PAGE_SIZE}
-</select>
+	<select id="countHospitalByCondition" resultType="int" parameterType="Proxy">
+		SELECT 
+					COUNT(*) 
+		FROM 		HOSPITAL AS h 
+		JOIN 		(SELECT 	a.hos_no 
+					FROM 
+								(SELECT 	hos_no 
+									, 		COUNT(*) AS cnt 
+								FROM 		HOS_INFO
+								WHERE 		hos_info_code IN 
+	 <foreach item="item" index="index" collection="checkBoxList" open="(" separator="," close=")">
+	        								#{item}
+	 </foreach>				
+								GROUP BY 	hos_no
+								) a
+					WHERE	 	cnt = (SELECT 		COUNT(*) 
+										FROM		hos_info_code 
+										WHERE		hos_info_code IN 
+	 <foreach item="item" index="index" collection="checkBoxList" open="(" separator="," close=")">
+	        										#{item}
+	 </foreach>	
+					)) AS info
+		ON h.hos_no = info.hos_no
+	<trim prefix="WHERE" prefixOverrides="AND">
+	<if test="hosAddress != null and hosAddress != ''">
+					REPLACE(hos_address,' ' ,'') LIKE '${hosAddress}%' 
+	</if>
+	<if test="searchWrd != null and searchWrd != ''">
+		AND 		REPLACE(hos_name,' ','') LIKE REPLACE('%${searchWrd}%',' ','')
+	</if>    
+	</trim>
+	</select>
 
 
-<select id="selectHospitalDetail" resultType="HospitalVo">
-select * from hospital
-WHERE hos_no like #{hosNo}
-</select>
+<!-- 	검색		 -->
+	<select id="selectHospitalAllList" resultType="HospitalVo" parameterType="Proxy">
+		SELECT		* 
+		FROM		HOSPITAL
+	<trim prefix="WHERE" prefixOverrides="AND">
+	<if test="hosAddress != null and hosAddress != ''">
+	         		REPLCACE(hos_address,' ' ,'') LIKE '${hosAddress}%' 
+	</if>
+	<if test="searchWrd != null and searchWrd != ''">
+		AND 		REPLACE(hos_name,' ','') LIKE REPLACE('%${searchWrd}%',' ','')
+	</if>    
+	</trim>
+		ORDER BY 	HOS_NO DESC 
+		LIMIT 	${startRow} ,${PAGE_SIZE}
+	</select>
 
 
-<insert id = "insetHospitalDumpData" parameterType="DummyHospitalVo">
-INSERT INTO HOSPITAL (hos_no, hos_id, hos_pass, hos_name, hos_phone, hos_address, hos_site, hos_optime,hos_open,hos_close, hos_major_treatment_target, hos_course_of_treatment, hos_feature, hos_service, hos_intro, hos_photo,treat_no)
-VALUES (#{hosNo},#{hosId},#{hosPass},#{hosName},#{hosPhone},#{hosAddress},#{hosSite},#{hosOptime},"09:00:00","18:00:00",#{hosMajorTreatmentTarget},#{hosCourseOfTreatment},#{hosFeature},#{hosService},#{hosIntro},#{hosPhoto},"0") 
-</insert>
 
-<insert id = "insetHospitalInfoDumpData" parameterType="HosInfoVo">
-INSERT INTO HOS_INFO (hos_no, hos_info_code)
-VALUES (#{hosNo},#{hosInfoCode}) 
-</insert>
+
+	<select id="selectHospitalList" resultType="HospitalVo" parameterType="Proxy">
+		SELECT 		h.* 
+		FROM 		HOSPITAL as h 
+		JOIN 		(SELECT 		
+								a.hos_no 
+					FROM 		(SELECT 		
+											hos_no 
+									, 		COUNT(*) as cnt 
+								FROM 		HOS_INFO 
+								WHERE 		hos_info_code IN 
+	  	<foreach item="item" index="index" collection="checkBoxList" open="(" separator="," close=")">
+	        								#{item}
+	  	</foreach>				
+								GROUP BY 	hos_no
+								) a
+					WHERE 		cnt = 	(SELECT 
+													COUNT(*) 
+										FROM 		HOS_INFO_CODE
+										WHERE 		hos_info_code IN 
+	  	<foreach item="item" index="index" collection="checkBoxList" open="(" separator="," close=")">
+	        										#{item}
+	  	</foreach>	
+										)
+					) as info
+		ON h.hos_no = info.hos_no
+		<trim prefix="WHERE" prefixOverrides="AND">
+	    <if test="hosAddress != null and hosAddress != ''">
+	    			REPLACE(hos_address,' ' ,'') LIKE '${hosAddress}%' 
+	    </if>
+	    <if test="searchWrd != null and searchWrd != ''">
+		AND 		REPLACE(hos_name,' ','') LIKE REPLACE('%${searchWrd}%',' ','')
+	    </if>    
+	 	</trim>
+		LIMIT ${startRow} ,${PAGE_SIZE}
+	</select>
+
+
+	<select id="selectHospitalDetail" resultType="HospitalVo">
+		SELECT		* 
+		FROM		HOSPITAL
+		WHERE 		hos_no LIKE #{hosNo}
+	</select>
+
+
+	<insert id = "insetHospitalDumpData" parameterType="DummyHospitalVo">
+		INSERT	INTO 	HOSPITAL 
+					(
+							hos_no
+						, 	hos_name
+						, 	hos_phone
+						, 	hos_address
+						, 	hos_site
+						, 	hos_optime
+						,	hos_open
+						,	hos_close
+						,	hos_major_treatment_target
+						, 	hos_course_of_treatment
+						, 	hos_feature
+						, 	hos_service
+						, 	hos_intro
+						, 	hos_photo
+						,	hos_id
+					) VALUES (
+							#{hosNo}
+						,	#{hosName}
+						,	#{hosPhone}
+						,	#{hosAddress}
+						,	#{hosSite}
+						,	#{hosOptime}
+						,	"09:00:00"
+						,	"18:00:00"
+						,	#{hosMajorTreatmentTarget}
+						,	#{hosCourseOfTreatment}
+						,	#{hosFeature}
+						,	#{hosService}
+						,	#{hosIntro}
+						,	#{hosPhoto}
+						,	#{hosId}
+					) 
+	</insert>
+
+	<insert id = "insetHospitalInfoDumpData" parameterType="HosInfoVo">
+		INSERT	INTO	HOS_INFO 
+					(			
+							hos_no
+						, 	hos_info_code
+					) VALUES (
+							#{hosNo}
+						,	#{hosInfoCode}
+					) 
+	</insert>
 
 
 </mapper>

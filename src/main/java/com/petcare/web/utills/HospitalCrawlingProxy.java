@@ -175,7 +175,6 @@ public class HospitalCrawlingProxy {
 		
 		tempHosVo.setHosNo(Integer.parseInt(hosNo));
 		tempHosVo.setHosId("hosNo"+hosNo);
-		tempHosVo.setHosPass("hosNo"+hosNo);		
 		tempHosVo.setHosName(table_11.get(1).text());
 		tempHosVo.setHosAddress(table_11.get(3).text());
 		tempHosVo.setHosPhone(table_11.get(5).text());

@@ -5,19 +5,37 @@
 <mapper namespace="com.petcare.web.mapper.ReviewBrdMapper">
 
 
-<select id="cntReview" resultType="int">
-select count(*) from review_brd where hos_no like #{hosNo}
-</select>
-<select id="selectReview" resultType="ReviewBrdVo">
-select * from review_brd
-where hos_no like #{hosNo} 
-order by brd_seq desc
-LIMIT ${startRow} ,${PAGE_SIZE}
-</select>
-
-<insert id ="insertReview" parameterType="ReviewBrdVo">
-insert into review_brd (user_id, hos_no, rate, comment, write_date)
-values (#{userId},#{hosNo},#{rate},#{comment},DATE_FORMAT(NOW(),'%Y%m%d'))
-</insert>
-
-</mapper>
+	<select id="cntReview" resultType="int">
+		SELECT		
+					COUNT(*) 
+		FROM		REVIEW_BRD
+		WHERE 		HOS_NO LIKE #{hosNo}
+	</select>
+	
+	
+	<select id="selectReview" resultType="ReviewBrdVo">
+		SELECT 		* 
+		FROM 		REVIEW_BRD
+		WHERE 		hos_no LIKE #{hosNo} 
+		ORDER BY 	brd_seq DESC
+		LIMIT 		${startRow} ,${PAGE_SIZE}
+	</select>
+	
+	<insert id ="insertReview" parameterType="ReviewBrdVo">
+		INSERT	INTO	REVIEW_BRD
+				(
+						user_id
+					, 	hos_no
+					, 	rate
+					, 	comment
+					,	write_date
+				) VALUES (
+						#{userId}
+					,	#{hosNo}
+					,	#{rate}
+					,	#{comment}
+					,	DATE_FORMAT(NOW(),'%Y%m%d')
+				)
+	</insert>
+	
+	</mapper>
